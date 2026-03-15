@@ -1225,7 +1225,7 @@ function spPreviewPhoto(input){
 async function saveStatusPhoto(){
   if(!statusPhotoId){ toast('⚠️ Hata'); return; }
   const status = document.getElementById('spStatus').value;
-  const updates = { status };
+  const updates = { status, completedBy: currentUser.display, completedAt: new Date().toLocaleDateString("tr-TR") };
   if(statusPhotoData) updates.photo2 = statusPhotoData;
   if(firebaseMode){
     const{db,doc,updateDoc}=fb;
@@ -1633,14 +1633,14 @@ function makePopup(p){
       ${p.photo2?`<div style="flex:1"><div style="font-size:9px;color:var(--accent2);margin-bottom:3px;text-align:center;font-weight:700">📸 Son Güncelleme</div><img src="${p.photo2}" style="width:100%;border-radius:8px;border:1px solid var(--accent2);max-height:120px;object-fit:cover"/></div>`:''}
     </div>`:''}
     <div class="popup-coords">${(+p.lat).toFixed(6)}, ${(+p.lng).toFixed(6)}</div>
-    <div class="popup-meta">👤 ${p.displayName||p.addedBy}<br>📅 ${p.dateStr||'—'} &nbsp; 🕐 ${p.timeStr||'—'}${p.desc?`<br>📝 ${p.desc}`:''}</div>
+    <div class="popup-meta">👤 <b>Oluşturan:</b> ${p.displayName||p.addedBy}<br>📅 ${p.dateStr||'—'} &nbsp; 🕐 ${p.timeStr||'—'}${p.completedBy?`<br>✅ <b>Tamamlayan:</b> ${p.completedBy} (${p.completedAt||'—'})`:''} ${p.desc?`<br>📝 ${p.desc}`:''}</div>
     <div class="popup-actions">
       <select data-action="status" data-pid="${pid}" style="flex:1;padding:5px 8px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;cursor:pointer">
         <option value="bekliyor" ${st==='bekliyor'?'selected':''}>⏳ Bekliyor</option>
         <option value="devam" ${st==='devam'?'selected':''}>🔧 Devam</option>
         <option value="tamamlandi" ${st==='tamamlandi'?'selected':''}>✅ Tamam</option>
       </select>
-      <button class="btn-xs btn-outline" onclick="Object.values(markers).forEach(m=>{if(m.isPopupOpen())m.closePopup()});setTimeout(()=>openStatusPhoto('${pid}'),100)" style="padding:6px 12px;font-size:13px">📸 Fotoğraf</button>
+      <button class="btn-xs btn-outline" onclick="Object.values(markers).forEach(m=>{if(m.isPopupOpen())m.closePopup()});setTimeout(()=>openStatusPhoto('${pid}'),100)" style="padding:6px 12px;font-size:13px">${p.photo2?'📸 Yeni Fotoğraf':'📸 Fotoğraf'}</button>
       ${isOwnerOrAdmin?`<button class="btn-xs btn-outline" data-action="edit" data-pid="${pid}">✏️</button>
       <button class="btn-xs btn-danger-outline" data-action="delete" data-pid="${pid}">🗑</button>`:''}
     </div>
