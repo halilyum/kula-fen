@@ -1136,8 +1136,15 @@ let popupPhotoPointId = null;
 
 function triggerPopupPhoto(id){
   popupPhotoPointId = id;
-  document.getElementById('popupPhotoInput').value = '';
-  document.getElementById('popupPhotoInput').click();
+  // Popup kapanmasın
+  Object.values(markers).forEach(m=>{ try{ m._popup && m._popup.options && (m._popup.options.autoClose=false); }catch{} });
+  map.closePopupOnClick = false;
+  setTimeout(()=>{
+    document.getElementById('popupPhotoInput').value = '';
+    document.getElementById('popupPhotoInput').click();
+    // 3 saniye sonra normal moda dön
+    setTimeout(()=>{ map.closePopupOnClick = true; },3000);
+  },100);
 }
 
 function handlePopupPhoto(input){
@@ -1219,7 +1226,7 @@ async function saveStatusPhoto(){
   if(!statusPhotoId){ toast('⚠️ Hata'); return; }
   const status = document.getElementById('spStatus').value;
   const updates = { status };
-  if(statusPhotoData) updates.photo = statusPhotoData;
+  if(statusPhotoData) updates.photo2 = statusPhotoData;
   if(firebaseMode){
     const{db,doc,updateDoc}=fb;
     try{ await updateDoc(doc(db,'points',statusPhotoId), updates); }
@@ -1633,7 +1640,7 @@ function makePopup(p){
         <option value="devam" ${st==='devam'?'selected':''}>🔧 Devam</option>
         <option value="tamamlandi" ${st==='tamamlandi'?'selected':''}>✅ Tamam</option>
       </select>
-      <button class="btn-xs btn-outline" onclick="triggerPopupPhoto('${pid}')" style="padding:6px 12px;font-size:13px">📸 Fotoğraf</button>
+      <button class="btn-xs btn-outline" onclick="Object.values(markers).forEach(m=>{if(m.isPopupOpen())m.closePopup()});setTimeout(()=>openStatusPhoto('${pid}'),100)" style="padding:6px 12px;font-size:13px">📸 Fotoğraf</button>
       ${isOwnerOrAdmin?`<button class="btn-xs btn-outline" data-action="edit" data-pid="${pid}">✏️</button>
       <button class="btn-xs btn-danger-outline" data-action="delete" data-pid="${pid}">🗑</button>`:''}
     </div>
