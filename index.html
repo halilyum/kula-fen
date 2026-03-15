@@ -753,6 +753,22 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
   </div>
   <div class="drawer-body">
     <div style="font-size:13px;font-weight:700;color:var(--accent2);margin-bottom:14px" id="spTitle"></div>
+    
+    <!-- Mevcut fotoğraflar -->
+    <div id="spExistingPhotos" style="display:none;margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px">Mevcut Fotoğraflar</div>
+      <div style="display:flex;gap:8px">
+        <div id="spPhoto1Wrap" style="display:none;flex:1">
+          <div style="font-size:10px;color:var(--muted);text-align:center;margin-bottom:4px">📷 İlk Fotoğraf</div>
+          <img id="spPhoto1" style="width:100%;border-radius:8px;border:1px solid var(--border);max-height:120px;object-fit:cover"/>
+        </div>
+        <div id="spPhoto2Wrap" style="display:none;flex:1">
+          <div style="font-size:10px;color:var(--accent2);text-align:center;margin-bottom:4px;font-weight:700">📸 Son Fotoğraf</div>
+          <img id="spPhoto2" style="width:100%;border-radius:8px;border:1px solid var(--accent2);max-height:120px;object-fit:cover"/>
+        </div>
+      </div>
+    </div>
+
     <div class="form-group">
       <label class="form-label">📋 Yeni Durum</label>
       <select class="form-input" id="spStatus">
@@ -762,9 +778,11 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
       </select>
     </div>
     <div class="form-group">
-      <label class="form-label">📸 Güncel Fotoğraf (isteğe bağlı)</label>
-      <input type="file" id="spPhoto" accept="image/*" capture="environment" onchange="spPreviewPhoto(this)" style="display:none"/>
-      <button class="btn btn-outline btn-full" onclick="document.getElementById('spPhoto').click()">📷 Fotoğraf Çek / Seç</button>
+      <label class="form-label">📸 Yeni Fotoğraf Ekle (isteğe bağlı)</label>
+      <label class="btn btn-outline btn-full" style="display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer">
+        📷 Fotoğraf Çek / Seç
+        <input type="file" id="spPhoto" accept="image/*" capture="environment" onchange="spPreviewPhoto(this)" style="display:none"/>
+      </label>
       <img id="spPhotoPreview" class="photo-preview" alt="önizleme"/>
     </div>
     <button class="btn btn-success btn-full" onclick="saveStatusPhoto()">✅ Kaydet</button>
@@ -1196,6 +1214,17 @@ function openStatusPhoto(id){
   document.getElementById('spPhotoPreview').classList.remove('show');
   document.getElementById('spPhotoPreview').src = '';
   document.getElementById('spPhoto').value = '';
+  // Mevcut fotoğrafları göster
+  const hasPhotos = pt.photo || pt.photo2;
+  document.getElementById('spExistingPhotos').style.display = hasPhotos ? 'block' : 'none';
+  if(pt.photo){
+    document.getElementById('spPhoto1Wrap').style.display='block';
+    document.getElementById('spPhoto1').src = pt.photo;
+  } else { document.getElementById('spPhoto1Wrap').style.display='none'; }
+  if(pt.photo2){
+    document.getElementById('spPhoto2Wrap').style.display='block';
+    document.getElementById('spPhoto2').src = pt.photo2;
+  } else { document.getElementById('spPhoto2Wrap').style.display='none'; }
   openDrawer('statusphoto');
 }
 
