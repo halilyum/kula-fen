@@ -817,8 +817,46 @@ const DEFAULT_USERS = {
   "saha14":{"pass":"saha123456","role":"saha","display":"Saha Ekibi 14"},
   "saha15":{"pass":"saha123456","role":"saha","display":"Saha Ekibi 15"},
 };
+// ── Kullanıcı yönetimi: Firebase modunda Firestore, değilse localStorage ──
 function loadUsers(){try{const s=localStorage.getItem('kula_users');return s?JSON.parse(s):{...DEFAULT_USERS}}catch{return{...DEFAULT_USERS}}}
-function saveUsers(u){try{localStorage.setItem('kula_users',JSON.stringify(u))}catch{}}
+function saveUsers(u){
+  try{localStorage.setItem('kula_users',JSON.stringify(u))}catch{}
+  // Firebase modunda Firestore'a da yaz
+  if(firebaseMode && fb && fb.firebaseReady){
+    const{db}=fb;
+    Object.entries(u).forEach(([uname,data])=>{
+      db.collection('users').doc(uname).set(data,{merge:true}).catch(e=>console.warn('users sync err:',e));
+    });
+  }
+}
+// Firestore'dan kullanıcıları yükle (Firebase modunda)
+async function syncUsersFromFirestore(){
+  if(!firebaseMode || !fb || !fb.firebaseReady) return;
+  try{
+    const{db}=fb;
+    const snap=await db.collection('users').get();
+    if(snap.empty){
+      // İlk kez: varsayılan kullanıcıları Firestore'a yaz
+      const defaults=loadUsers();
+      Object.entries(defaults).forEach(([uname,data])=>{
+        db.collection('users').doc(uname).set(data,{merge:true});
+      });
+    } else {
+      const remote={};
+      snap.forEach(d=>remote[d.id]={...d.data()});
+      // Remote + local merge (remote öncelikli)
+      const merged={...loadUsers(),...remote};
+      localStorage.setItem('kula_users',JSON.stringify(merged));
+      USERS=merged;
+    }
+  }catch(e){console.warn('syncUsers err:',e)}
+}
+// Kullanıcı silme (Firebase modunda Firestore'dan da sil)
+async function deleteUserFirestore(uname){
+  if(firebaseMode && fb && fb.firebaseReady){
+    try{await fb.db.collection('users').doc(uname).delete()}catch(e){console.warn('user delete err:',e)}
+  }
+}
 let USERS = loadUsers();
 
 // ══════════════════════════════════════════
@@ -876,6 +914,7 @@ window.addEventListener('load',()=>{
         firebaseMode = true;
         const notice = document.getElementById('setupNotice');
         if(notice) notice.style.display='none';
+        syncUsersFromFirestore();
       } else {
         document.getElementById('setupNotice').style.display='block';
       }
@@ -892,6 +931,7 @@ window.addEventListener('load',()=>{
       firebaseMode = true;
       const notice = document.getElementById('setupNotice');
       if(notice) notice.style.display='none';
+      syncUsersFromFirestore();
     } else {
       document.getElementById('setupNotice').style.display='block';
     }
@@ -901,10 +941,26 @@ window.addEventListener('load',()=>{
 // ══════════════════════════════════════════
 // AUTH
 // ══════════════════════════════════════════
-function doLogin(){
+async function doLogin(){
   const username=document.getElementById('loginUser').value.trim().toLowerCase();
   const password=document.getElementById('loginPass').value;
   if(!username||!password){showLoginError('Kullanıcı adı ve şifre gereklidir');return}
+  // Firebase modunda Firestore'dan anlık kontrol
+  if(firebaseMode && fb && fb.firebaseReady){
+    try{
+      const snap=await fb.db.collection('users').doc(username).get();
+      if(snap.exists){
+        const u=snap.data();
+        if(u.pass!==password){showLoginError('Kullanıcı adı veya şifre hatalı');return}
+        // Lokal cache güncelle
+        USERS=loadUsers();USERS[username]=u;localStorage.setItem('kula_users',JSON.stringify(USERS));
+        currentUser={username,...u};
+        document.getElementById('loginError').style.display='none';
+        enterApp();return;
+      }
+    }catch(e){console.warn('Firestore login check fail, falling back to local:',e)}
+  }
+  // Fallback: localStorage
   USERS=loadUsers();
   const user=USERS[username];
   if(!user||user.pass!==password){showLoginError('Kullanıcı adı veya şifre hatalı');return}
@@ -2163,7 +2219,9 @@ function adminDeleteUser(uname){
   if(uname===currentUser.username){toast('⚠️ Kendinizi silemezsiniz');return}
   USERS=loadUsers();const u=USERS[uname];if(!u)return;
   if(!confirm(`"${u.display}" (@${uname}) silinecek. Onaylıyor musunuz?`))return;
-  delete USERS[uname];saveUsers(USERS);renderAdminUsers();toast(`🗑 "${u.display}" silindi`);
+  delete USERS[uname];saveUsers(USERS);
+  deleteUserFirestore(uname);
+  renderAdminUsers();toast(`🗑 "${u.display}" silindi`);
 }
 function adminChangePass(){
   const uname=document.getElementById('chpassUser').value;
