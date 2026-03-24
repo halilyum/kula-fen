@@ -383,6 +383,10 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
       <span>🚧</span><span class="nav-label">Aksaklıklar</span>
       <span class="nav-badge" id="navBadgeList">0</span>
     </div>
+    <div class="nav-item" id="nav-isler" onclick="setNav('isler');openIslerDrawer()">
+      <span>📋</span><span class="nav-label">İşler</span>
+      <span class="nav-badge" id="navBadgeIsler">0</span>
+    </div>
     <div class="nav-item" id="nav-users" onclick="setNav('users');openUsersDrawer()">
       <span>👥</span><span class="nav-label">Ekip</span>
     </div>
@@ -490,6 +494,31 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
     <input class="search-input" id="searchInput" placeholder="🔍 Ara: konum, tür, kullanıcı…" oninput="renderList()"/>
   </div>
   <div class="drawer-body" id="pointListBody" style="padding-top:8px"></div>
+</div>
+
+<!-- ═══ DRAWER: İŞLER ═══ -->
+<div class="drawer-overlay" id="islerOverlay" onclick="closeDrawers()"></div>
+<div class="drawer" id="islerDrawer">
+  <div class="drawer-handle"></div>
+  <div class="drawer-header">
+    <span class="drawer-title">📋 İşler</span>
+    <button class="drawer-close" onclick="closeDrawers()">✕</button>
+  </div>
+  <div style="display:flex;border-bottom:2px solid var(--border);flex-shrink:0">
+    <div id="islerTabBekliyor" onclick="switchIslerTab('bekliyor')" style="flex:1;text-align:center;padding:11px 4px;font-size:12px;font-weight:700;cursor:pointer;border-bottom:3px solid #f59e0b;color:#f59e0b;margin-bottom:-2px;transition:all .15s">
+      ⏳ Bekleyen <span id="islerCountBekliyor" style="background:rgba(245,158,11,0.2);border-radius:100px;padding:1px 7px;font-size:11px;margin-left:2px">0</span>
+    </div>
+    <div id="islerTabDevam" onclick="switchIslerTab('devam')" style="flex:1;text-align:center;padding:11px 4px;font-size:12px;font-weight:700;cursor:pointer;border-bottom:3px solid transparent;color:var(--muted);margin-bottom:-2px;transition:all .15s">
+      🔧 Devamda <span id="islerCountDevam" style="background:var(--surface2);border-radius:100px;padding:1px 7px;font-size:11px;margin-left:2px">0</span>
+    </div>
+    <div id="islerTabTamamlandi" onclick="switchIslerTab('tamamlandi')" style="flex:1;text-align:center;padding:11px 4px;font-size:12px;font-weight:700;cursor:pointer;border-bottom:3px solid transparent;color:var(--muted);margin-bottom:-2px;transition:all .15s">
+      ✅ Tamam <span id="islerCountTamamlandi" style="background:var(--surface2);border-radius:100px;padding:1px 7px;font-size:11px;margin-left:2px">0</span>
+    </div>
+  </div>
+  <div style="padding:8px 16px;border-bottom:1px solid var(--border)">
+    <input class="search-input" id="islerSearch" placeholder="🔍 Ara…" oninput="renderIsler()" style="width:100%"/>
+  </div>
+  <div id="islerBody" style="overflow-y:auto;max-height:62vh;padding:8px 16px 16px"></div>
 </div>
 
 <!-- ═══ DRAWER: DÜZENLE ═══ -->
@@ -706,6 +735,31 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
         <option value="saha">Saha Elemanı</option><option value="admin">Admin</option>
       </select>
     </div>
+    <div class="form-group">
+      <label class="form-label">🎨 Ekip Rengi</label>
+      <div id="newUserColorGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:6px">
+        <div onclick="selectNewUserColor(this,'#ef4444')" data-color="#ef4444" style="border-radius:10px;padding:8px 4px;background:rgba(239,68,68,0.15);border:2px solid #ef4444;cursor:pointer;text-align:center;transition:all .15s" data-selected="1">
+          <div style="width:26px;height:26px;border-radius:50%;background:#ef4444;margin:0 auto 5px;box-shadow:0 0 8px #ef444466"></div>
+          <div style="font-size:9px;font-weight:700;color:#ef4444;line-height:1.3">⚡ Elektrik</div>
+        </div>
+        <div onclick="selectNewUserColor(this,'#22c55e')" data-color="#22c55e" style="border-radius:10px;padding:8px 4px;background:#22c55e08;border:2px solid var(--border);cursor:pointer;text-align:center;transition:all .15s">
+          <div style="width:26px;height:26px;border-radius:50%;background:#22c55e;margin:0 auto 5px"></div>
+          <div style="font-size:9px;font-weight:700;color:var(--muted);line-height:1.3">🌿 Park Bahçe</div>
+        </div>
+        <div onclick="selectNewUserColor(this,'#e2e8f0')" data-color="#e2e8f0" style="border-radius:10px;padding:8px 4px;background:#e2e8f008;border:2px solid var(--border);cursor:pointer;text-align:center;transition:all .15s">
+          <div style="width:26px;height:26px;border-radius:50%;background:#e2e8f0;margin:0 auto 5px;border:1px solid #64748b"></div>
+          <div style="font-size:9px;font-weight:700;color:var(--muted);line-height:1.3">🏗️ İnşaat</div>
+        </div>
+        <div onclick="selectNewUserColor(this,'#3b82f6')" data-color="#3b82f6" style="border-radius:10px;padding:8px 4px;background:#3b82f608;border:2px solid var(--border);cursor:pointer;text-align:center;transition:all .15s">
+          <div style="width:26px;height:26px;border-radius:50%;background:#3b82f6;margin:0 auto 5px"></div>
+          <div style="font-size:9px;font-weight:700;color:var(--muted);line-height:1.3">💧 Su/Altyapı</div>
+        </div>
+        <div onclick="selectNewUserColor(this,'#f59e0b')" data-color="#f59e0b" style="border-radius:10px;padding:8px 4px;background:#f59e0b08;border:2px solid var(--border);cursor:pointer;text-align:center;transition:all .15s">
+          <div style="width:26px;height:26px;border-radius:50%;background:#f59e0b;margin:0 auto 5px"></div>
+          <div style="font-size:9px;font-weight:700;color:var(--muted);line-height:1.3">🛣️ Yol/Asfalt</div>
+        </div>
+      </div>
+    </div>
     <button class="btn btn-primary btn-full" onclick="adminAddUser()">➕ Kullanıcı Ekle</button>
     <hr style="border-color:var(--border);margin:18px 0"/>
     <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px">✏️ İsim Değiştir</div>
@@ -819,14 +873,19 @@ const DEFAULT_USERS = {
 };
 // ── Kullanıcı yönetimi: Firebase modunda Firestore, değilse localStorage ──
 function loadUsers(){try{const s=localStorage.getItem('kula_users');return s?JSON.parse(s):{...DEFAULT_USERS}}catch{return{...DEFAULT_USERS}}}
-function saveUsers(u){
+function saveUsers(u, changedUsername){
   try{localStorage.setItem('kula_users',JSON.stringify(u))}catch{}
-  // Firebase modunda Firestore'a da yaz
   if(firebaseMode && fb && fb.firebaseReady){
     const{db}=fb;
-    Object.entries(u).forEach(([uname,data])=>{
-      db.collection('users').doc(uname).set(data,{merge:true}).catch(e=>console.warn('users sync err:',e));
-    });
+    if(changedUsername){
+      // Sadece değişen kullanıcıyı yaz — daha güvenli ve hızlı
+      if(u[changedUsername])
+        db.collection('users').doc(changedUsername).set(u[changedUsername]).catch(e=>console.warn('users sync err:',e));
+    } else {
+      Object.entries(u).forEach(([uname,data])=>{
+        db.collection('users').doc(uname).set(data).catch(e=>console.warn('users sync err:',e));
+      });
+    }
   }
 }
 // Firestore'dan kullanıcıları yükle (Firebase modunda)
@@ -839,15 +898,14 @@ async function syncUsersFromFirestore(){
       // İlk kez: varsayılan kullanıcıları Firestore'a yaz
       const defaults=loadUsers();
       Object.entries(defaults).forEach(([uname,data])=>{
-        db.collection('users').doc(uname).set(data,{merge:true});
+        db.collection('users').doc(uname).set(data).catch(e=>console.warn('init user err:',e));
       });
     } else {
       const remote={};
       snap.forEach(d=>remote[d.id]={...d.data()});
-      // Remote + local merge (remote öncelikli)
-      const merged={...loadUsers(),...remote};
-      localStorage.setItem('kula_users',JSON.stringify(merged));
-      USERS=merged;
+      // Remote HER ZAMAN öncelikli — admin değişiklikleri Firebase'de saklanır
+      localStorage.setItem('kula_users',JSON.stringify(remote));
+      USERS=remote;
     }
   }catch(e){console.warn('syncUsers err:',e)}
 }
@@ -1345,7 +1403,7 @@ function saveSelfRename() {
   if(!USERS[currentUser.username]){toast('⚠️ Kullanıcı bulunamadı');return}
   const old = currentUser.display;
   USERS[currentUser.username].display = newDisplay;
-  saveUsers(USERS);
+  saveUsers(USERS, currentUser.username);
   currentUser.display = newDisplay;
   document.getElementById('userNameEl').textContent = newDisplay;
   document.getElementById('avatarEl').textContent = newDisplay.charAt(0).toUpperCase();
@@ -1657,7 +1715,10 @@ function filterPoints(){
 // ══════════════════════════════════════════
 // RENDER
 // ══════════════════════════════════════════
-function renderAll(){renderMarkers();renderList();renderLog();updateStats()}
+function renderAll(){
+  renderMarkers();renderList();renderLog();updateStats();
+  if(document.getElementById('islerDrawer')?.classList.contains('open')) renderIsler();
+}
 
 function renderMarkers(){
   if(!map)return;
@@ -1874,6 +1935,8 @@ function updateStats(){
   const nb=document.getElementById('navBadgeList');
   const bekl=points.filter(p=>(p.status||'bekliyor')==='bekliyor').length;
   nb.textContent=bekl;nb.classList.toggle('show',bekl>0);
+  const ni=document.getElementById('navBadgeIsler');
+  if(ni){ni.textContent=bekl;ni.classList.toggle('show',bekl>0);}
 }
 
 // ══════════════════════════════════════════
@@ -1911,7 +1974,7 @@ function renderUsersPanel(){
       const tamam=u.points.filter(p=>p.status==='tamamlandi').length;
       return `<div class="user-panel-card" onclick="openUserDetail('${uname}')">
         <div class="user-panel-top">
-          <div class="user-panel-avatar ${isAdmin?'admin-av':''}">${u.display.charAt(0)}</div>
+          <div class="user-panel-avatar ${isAdmin?'admin-av':''}" style="${u.color?`background:linear-gradient(135deg,${u.color},${u.color}bb);box-shadow:0 0 12px ${u.color}44;color:${u.color==='#e2e8f0'?'#0a1628':'#fff'}`:''}">${u.display.charAt(0)}</div>
           <div class="user-panel-info">
             <div class="user-panel-name">${u.display}</div>
             <div class="user-panel-sub">@${uname} · <span class="role-badge ${u.role}">${isAdmin?'Admin':'Saha'}</span></div>
@@ -2148,7 +2211,7 @@ function exportCSV(){
 // ══════════════════════════════════════════
 // ADMİN
 // ══════════════════════════════════════════
-function openAdminDrawer(){if(currentUser?.role!=='admin'){toast('⛔ Yetkisiz');return}renderAdminUsers();openDrawer('admin')}
+function openAdminDrawer(){if(currentUser?.role!=='admin'){toast('⛔ Yetkisiz');return}renderAdminUsers();openDrawer('admin');setTimeout(resetNewUserColor,150)}
 function renderAdminUsers(){
   USERS=loadUsers();
   const container=document.getElementById('adminUserList');
@@ -2157,7 +2220,7 @@ function renderAdminUsers(){
   container.innerHTML=Object.entries(USERS).map(([uname,u])=>{
     const isMe=uname===currentUser.username;
     return `<div class="admin-user-row">
-      <div style="width:30px;height:30px;border-radius:50%;background:${u.role==='admin'?'linear-gradient(135deg,#f59e0b,#ef4444)':'linear-gradient(135deg,var(--accent),var(--accent2))'};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff">${u.display.charAt(0)}</div>
+      <div style="width:30px;height:30px;border-radius:50%;background:${u.color?`linear-gradient(135deg,${u.color},${u.color}bb)`:u.role==='admin'?'linear-gradient(135deg,#f59e0b,#ef4444)':'linear-gradient(135deg,var(--accent),var(--accent2))'};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:${u.color==='#e2e8f0'?'#0a1628':'#fff'};box-shadow:${u.color?`0 0 8px ${u.color}55`:'none'}">${u.display.charAt(0)}</div>
       <div style="flex:1"><div style="font-size:13px;font-weight:700">${u.display}</div><div style="font-size:11px;color:var(--muted)">@${uname}</div></div>
       <span class="role-badge ${u.role}">${u.role==='admin'?'Admin':'Saha'}</span>
       <button class="btn-xs btn-warn-outline" onclick="quickRename('${uname}')" style="flex-shrink:0">✏️</button>
@@ -2185,13 +2248,11 @@ function adminRenameUser(){
   if(!USERS[uname]){toast('⚠️ Kullanıcı bulunamadı');return}
   const old=USERS[uname].display;
   USERS[uname].display=newDisplay;
-  saveUsers(USERS);
-  // Update display name in existing points (demo mode)
+  saveUsers(USERS, uname);
   if(!firebaseMode){
     points.forEach(p=>{if(p.addedBy===uname){p.displayName=newDisplay}});
     renderAll();
   }
-  // Update current user badge if renaming self
   if(uname===currentUser?.username){
     currentUser.display=newDisplay;
     document.getElementById('userNameEl').textContent=newDisplay;
@@ -2206,20 +2267,24 @@ function adminAddUser(){
   const display=document.getElementById('newDisplay').value.trim();
   const pass=document.getElementById('newPass').value;
   const role=document.getElementById('newRole').value;
+  const colorEl=document.querySelector('#newUserColorGrid [data-selected]');
+  const color=colorEl?colorEl.dataset.color:'#3b82f6';
   if(!username){toast('⚠️ Kullanıcı adı giriniz');return}
   if(!display){toast('⚠️ Görünen isim giriniz');return}
   if(pass.length<6){toast('⚠️ Şifre en az 6 karakter');return}
   USERS=loadUsers();
   if(USERS[username]){toast('⚠️ Bu kullanıcı adı zaten var');return}
-  USERS[username]={pass,role,display};saveUsers(USERS);
+  USERS[username]={pass,role,display,color};saveUsers(USERS,username);
   document.getElementById('newUsername').value='';document.getElementById('newDisplay').value='';document.getElementById('newPass').value='';
+  resetNewUserColor();
   renderAdminUsers();populateReportUsers();toast(`✅ "${display}" eklendi`);
 }
 function adminDeleteUser(uname){
   if(uname===currentUser.username){toast('⚠️ Kendinizi silemezsiniz');return}
   USERS=loadUsers();const u=USERS[uname];if(!u)return;
   if(!confirm(`"${u.display}" (@${uname}) silinecek. Onaylıyor musunuz?`))return;
-  delete USERS[uname];saveUsers(USERS);
+  delete USERS[uname];
+  try{localStorage.setItem('kula_users',JSON.stringify(USERS))}catch{}
   deleteUserFirestore(uname);
   renderAdminUsers();toast(`🗑 "${u.display}" silindi`);
 }
@@ -2228,7 +2293,7 @@ function adminChangePass(){
   const newPass=document.getElementById('chpassNew').value;
   if(newPass.length<6){toast('⚠️ Şifre en az 6 karakter');return}
   USERS=loadUsers();if(!USERS[uname]){toast('⚠️ Kullanıcı bulunamadı');return}
-  USERS[uname].pass=newPass;saveUsers(USERS);
+  USERS[uname].pass=newPass;saveUsers(USERS,uname);
   document.getElementById('chpassNew').value='';
   toast(`✅ ${USERS[uname].display} şifresi güncellendi`);
 }
@@ -2300,7 +2365,7 @@ function openDrawer(name){
   setTimeout(()=>map&&map.invalidateSize(),350);
 }
 function closeDrawers(doResize=true){
-  ['add','list','edit','notif','log','users','userdetail','report','typefilter','datefilter','userfilter','admin','selfrename','statusphot'].forEach(name=>{
+  ['add','list','edit','notif','log','users','userdetail','report','typefilter','datefilter','userfilter','admin','selfrename','statusphot','isler'].forEach(name=>{
     const ov=document.getElementById(name+'Overlay'),dr=document.getElementById(name+'Drawer');
     if(ov) ov.classList.remove('open');if(dr) dr.classList.remove('open');
   });
@@ -2322,6 +2387,134 @@ let toastTimer;
 function toast(msg){
   const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');
   clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2500);
+}
+
+// ══════════════════════════════════════════
+// İŞLER PANELİ
+// ══════════════════════════════════════════
+let activeIslerTab = 'bekliyor';
+
+function openIslerDrawer(){
+  activeIslerTab='bekliyor';
+  switchIslerTab('bekliyor');
+  renderIsler();
+  openDrawer('isler');
+}
+
+function switchIslerTab(tab){
+  activeIslerTab=tab;
+  const tabColors={bekliyor:'#f59e0b',devam:'#3b82f6',tamamlandi:'#06d6a0'};
+  const tabBgs={bekliyor:'rgba(245,158,11,0.2)',devam:'rgba(59,130,246,0.2)',tamamlandi:'rgba(6,214,160,0.2)'};
+  ['bekliyor','devam','tamamlandi'].forEach(t=>{
+    const id='islerTab'+t.charAt(0).toUpperCase()+t.slice(1);
+    const el=document.getElementById(id);
+    if(!el)return;
+    const isActive=t===tab;
+    el.style.color=isActive?tabColors[t]:'var(--muted)';
+    el.style.borderBottom=isActive?`3px solid ${tabColors[t]}`:'3px solid transparent';
+    const badge=el.querySelector('span');
+    if(badge) badge.style.background=isActive?tabBgs[t]:'var(--surface2)';
+  });
+  renderIsler();
+}
+
+function renderIsler(){
+  const bekl=points.filter(p=>(p.status||'bekliyor')==='bekliyor').length;
+  const devm=points.filter(p=>p.status==='devam').length;
+  const tamm=points.filter(p=>p.status==='tamamlandi').length;
+  const cb=document.getElementById('islerCountBekliyor');
+  const cd=document.getElementById('islerCountDevam');
+  const ct=document.getElementById('islerCountTamamlandi');
+  if(cb)cb.textContent=bekl;
+  if(cd)cd.textContent=devm;
+  if(ct)ct.textContent=tamm;
+
+  const q=(document.getElementById('islerSearch')?.value||'').toLowerCase();
+  const container=document.getElementById('islerBody');
+  if(!container)return;
+
+  const filtered=points.filter(p=>{
+    const st=p.status||'bekliyor';
+    if(st!==activeIslerTab)return false;
+    if(!q)return true;
+    return (p.name||'').toLowerCase().includes(q)
+      ||(p.displayName||'').toLowerCase().includes(q)
+      ||(p.tag||'').toLowerCase().includes(q)
+      ||(p.desc||'').toLowerCase().includes(q);
+  });
+
+  if(filtered.length===0){
+    const msgs={bekliyor:'Bekleyen iş yok 🎉',devam:'Devam eden iş yok',tamamlandi:'Henüz tamamlanan iş yok'};
+    const icons={bekliyor:'⏳',devam:'🔧',tamamlandi:'✅'};
+    container.innerHTML=`<div class="empty"><div class="empty-icon">${icons[activeIslerTab]}</div><div class="empty-text">${q?'Sonuç bulunamadı':msgs[activeIslerTab]}</div></div>`;
+    return;
+  }
+
+  const canAdmin=currentUser?.role==='admin';
+  const tabColor=activeIslerTab==='bekliyor'?'#f59e0b':activeIslerTab==='devam'?'#3b82f6':'#06d6a0';
+
+  container.innerHTML=filtered.map(p=>{
+    const icon=AKSAKLIK_ICON[p.tag]||'📌';
+    const color=p.color||'#94a3b8';
+    const st=p.status||'bekliyor';
+    const isOwnerOrAdmin=canAdmin||p.addedBy===currentUser?.username;
+    return `<div style="background:var(--bg);border:1px solid var(--border);border-left:4px solid ${tabColor};border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;cursor:pointer" onclick="flyToPoint('${p.id}')">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="background:${color}22;color:${color};border:1px solid ${color}55;border-radius:100px;padding:2px 9px;font-size:11px;font-weight:700">${icon} ${p.tag||'—'}</span>
+        <span style="flex:1"></span>
+        <span style="font-size:10px;color:var(--muted)">${p.dateStr||'—'}</span>
+      </div>
+      <div style="font-weight:700;font-size:14px;margin-bottom:4px">${p.name}</div>
+      ${p.desc?`<div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-style:italic">📝 ${p.desc}</div>`:''}
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted)">
+          <span style="width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff">${(p.displayName||'?').charAt(0)}</span>
+          ${p.displayName||p.addedBy}
+        </span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)">🕐 ${p.timeStr||'—'}</span>
+      </div>
+      ${p.photo?`<img src="${p.photo}" style="width:100%;max-height:130px;object-fit:cover;border-radius:8px;border:1px solid var(--border);margin-bottom:8px"/>`:''}
+      <div style="display:flex;gap:6px;flex-wrap:wrap" onclick="event.stopPropagation()">
+        <select onchange="quickStatus('${p.id}',this.value);setTimeout(renderIsler,300)" style="padding:5px 8px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;cursor:pointer;font-family:'Outfit',sans-serif">
+          <option value="bekliyor" ${st==='bekliyor'?'selected':''}>⏳ Bekliyor</option>
+          <option value="devam" ${st==='devam'?'selected':''}>🔧 Devam</option>
+          <option value="tamamlandi" ${st==='tamamlandi'?'selected':''}>✅ Tamam</option>
+        </select>
+        <button class="btn-xs btn-outline" onclick="openStatusPhoto('${p.id}')">📸</button>
+        ${isOwnerOrAdmin?`
+        <button class="btn-xs btn-outline" onclick="openEdit('${p.id}')">✏️</button>
+        <button class="btn-xs btn-danger-outline" onclick="deletePoint('${p.id}')">🗑</button>`:''}
+        <button class="btn-xs btn-outline" onclick="copyCoords(${p.lat},${p.lng})">📋</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// RENK SEÇİCİ (Admin - Yeni Kullanıcı)
+// ══════════════════════════════════════════
+function selectNewUserColor(el,color){
+  document.querySelectorAll('#newUserColorGrid>div').forEach(d=>{
+    const c=d.dataset.color;
+    d.style.border='2px solid var(--border)';
+    d.style.background=c+'08';
+    const circle=d.querySelector('div:first-child');
+    const label=d.querySelector('div:last-child');
+    if(circle)circle.style.boxShadow='none';
+    if(label)label.style.color='var(--muted)';
+    delete d.dataset.selected;
+  });
+  el.style.border=`2px solid ${color}`;
+  el.style.background=color+'18';
+  const circle=el.querySelector('div:first-child');
+  const label=el.querySelector('div:last-child');
+  if(circle)circle.style.boxShadow=`0 0 10px ${color}88`;
+  if(label)label.style.color=color;
+  el.dataset.selected='1';
+}
+function resetNewUserColor(){
+  const first=document.querySelector('#newUserColorGrid>div');
+  if(first)selectNewUserColor(first,first.dataset.color);
 }
 
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawers();if(e.key==='Enter'&&document.getElementById('loginScreen').classList.contains('active'))doLogin()});
