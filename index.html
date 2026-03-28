@@ -275,6 +275,94 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 @keyframes gpsPulse{0%,100%{box-shadow:0 0 0 0 rgba(6,214,160,.6)}50%{box-shadow:0 0 0 10px rgba(6,214,160,0)}}
 .gps-btn.loading{animation:gpsPulse 1s infinite}
 
+/* ACİL */
+@keyframes acilPulse{
+  0%,100%{background:rgba(239,68,68,1);box-shadow:0 0 0 0 rgba(239,68,68,.9),0 0 20px rgba(239,68,68,.6);color:#fff}
+  50%{background:rgba(180,10,10,1);box-shadow:0 0 0 8px rgba(239,68,68,0),0 0 35px rgba(239,68,68,.9);color:#ffe0e0}
+}
+@keyframes acilBorderPulse{
+  0%,100%{border-color:#ef4444;outline:2px solid rgba(239,68,68,.5)}
+  50%{border-color:#ff2020;outline:4px solid rgba(239,68,68,.9)}
+}
+@keyframes acilTextFlicker{
+  0%,90%,100%{opacity:1;letter-spacing:1.5px}
+  45%{opacity:.85;letter-spacing:2.5px}
+}
+.acil-chip{
+  grid-column:1/-1;
+  padding:13px 10px;
+  background:rgba(239,68,68,.12);
+  border:2px solid rgba(239,68,68,.4);
+  border-radius:var(--radius);
+  font-size:13px;
+  font-weight:800;
+  cursor:pointer;
+  text-align:center;
+  color:#ef4444;
+  transition:all .2s;
+  letter-spacing:1px;
+  user-select:none;
+  position:relative;
+  overflow:hidden;
+}
+.acil-chip::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(239,68,68,.05),transparent,rgba(239,68,68,.05));
+  pointer-events:none;
+}
+.acil-chip:active{transform:scale(.97)}
+.acil-chip.selected{
+  animation:acilPulse .9s ease-in-out infinite, acilBorderPulse .9s ease-in-out infinite;
+  background:rgba(239,68,68,1);
+  color:#fff;
+  border-color:#ef4444;
+  font-weight:900;
+  font-size:14px;
+}
+.acil-chip.selected .acil-text{
+  animation:acilTextFlicker .9s ease-in-out infinite;
+  display:inline-block;
+}
+.acil-badge{
+  display:inline-block;
+  background:rgba(255,255,255,.2);
+  border-radius:4px;
+  padding:1px 6px;
+  font-size:10px;
+  font-weight:700;
+  margin-left:6px;
+  vertical-align:middle;
+}
+.acil-chip:not(.selected) .acil-badge{
+  background:rgba(239,68,68,.15);
+  color:#ef4444;
+}
+@keyframes acilMarkerPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.8),0 0 12px rgba(239,68,68,.6)}
+  50%{box-shadow:0 0 0 12px rgba(239,68,68,0),0 0 24px rgba(239,68,68,.9)}
+}
+.acil-marker-dot{
+  width:20px;height:20px;border-radius:50%;
+  background:#ef4444;
+  border:3px solid #fff;
+  animation:acilMarkerPulse 1s ease-in-out infinite;
+  cursor:pointer;
+}
+.acil-marker-ring{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:36px;height:36px;
+  border-radius:50%;
+  border:2px solid rgba(239,68,68,.6);
+  animation:acilRingExpand 1s ease-out infinite;
+  pointer-events:none;
+}
+@keyframes acilRingExpand{
+  0%{width:20px;height:20px;opacity:1}
+  100%{width:52px;height:52px;opacity:0}
+}
+
 /* Search */
 .search-wrap{padding:10px 16px;border-bottom:1px solid var(--border)}
 .search-input{width:100%;padding:10px 14px;background:var(--bg);border:1.5px solid var(--border);border-radius:100px;color:var(--text);font-size:14px;outline:none}
@@ -429,6 +517,10 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
     <div class="form-group">
       <label class="form-label">⚠️ Aksaklık Türü *</label>
       <div class="aksaklik-grid" id="aksaklikGrid">
+        <div class="ak-chip acil-chip" data-value="ACİL" data-color="#ef4444" onclick="selectAksaklik(this);toggleAcilMode(this)">
+          🚨 <span class="acil-text">ACİL — HEMEN MÜDAHALE</span>
+          <span class="acil-badge">ACİL</span>
+        </div>
         <div class="ak-chip" data-value="PARKE TAŞI TAMİRAT" data-color="#f59e0b" onclick="selectAksaklik(this)">🧱 Parke Taşı Tamirat</div>
         <div class="ak-chip" data-value="BORDÜR TAMİRAT" data-color="#f97316" onclick="selectAksaklik(this)">🔲 Bordür Tamirat</div>
         <div class="ak-chip" data-value="SOĞUK ASFALT YAMA" data-color="#6366f1" onclick="selectAksaklik(this)">🛣️ Soğuk Asfalt Yama</div>
@@ -547,6 +639,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
       <label class="form-label">Aksaklık Türü</label>
       <select class="form-input" id="editTag" style="cursor:pointer">
         <option value="">— Seçiniz —</option>
+        <option>ACİL</option>
         <option>PARKE TAŞI TAMİRAT</option><option>BORDÜR TAMİRAT</option>
         <option>SOĞUK ASFALT YAMA</option><option>SICAK ASFALT YAMA</option>
         <option>GÜVENLİK ÖNLEMİ ALINACAK</option><option>SU ARIZA</option>
@@ -921,6 +1014,7 @@ let USERS = loadUsers();
 // SABITLER
 // ══════════════════════════════════════════
 const AKSAKLIK_COLORS = {
+  'ACİL':'#ef4444',
   'PARKE TAŞI TAMİRAT':'#f59e0b','BORDÜR TAMİRAT':'#f97316',
   'SOĞUK ASFALT YAMA':'#6366f1','SICAK ASFALT YAMA':'#8b5cf6',
   'GÜVENLİK ÖNLEMİ ALINACAK':'#ef4444','SU ARIZA':'#3b82f6',
@@ -933,6 +1027,7 @@ const AKSAKLIK_COLORS = {
   'DİĞER':'#94a3b8'
 };
 const AKSAKLIK_ICON = {
+  'ACİL':'🚨',
   'PARKE TAŞI TAMİRAT':'🧱','BORDÜR TAMİRAT':'🔲','SOĞUK ASFALT YAMA':'🛣️',
   'SICAK ASFALT YAMA':'🔥','GÜVENLİK ÖNLEMİ ALINACAK':'🚨','SU ARIZA':'💧',
   'TEMİZLİK YAPILACAK':'🧹','PALETLİ TAŞ':'🪨',
@@ -1167,6 +1262,7 @@ async function submitPoint(){
 }
 
 function clearAddForm(){
+  document.getElementById('addDrawer').classList.remove('acil-mode');
   ['ptName','ptLat','ptLng','ptDesc','addrSearch'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
   const res=document.getElementById('addrResults');if(res)res.style.display='none';
   document.querySelectorAll('.ak-chip').forEach(c=>{c.classList.remove('selected');c.style.color=''});
@@ -1593,6 +1689,13 @@ function selectAksaklik(el){
   selectedColor=color;
   document.querySelectorAll('.color-chip').forEach(c=>c.classList.toggle('selected',c.dataset.color===color));
 }
+
+function toggleAcilMode(el){
+  if(el.classList.contains('selected')){
+    selectStatus(document.querySelector('.status-opt[data-val="bekliyor"]'));
+    toast('🚨 ACİL kayıt modu aktif!');
+  }
+}
 function selectStatus(el){
   if(!el)return;
   document.querySelectorAll('.status-opt').forEach(o=>o.className='status-opt');
@@ -1741,10 +1844,17 @@ function renderMarkers(){
   // Add new markers & refresh popup content on all visible
   visible.forEach(p=>{
     const statusIcon={bekliyor:'⏳',devam:'🔧',tamamlandi:'✅'}[p.status||'bekliyor']||'⏳';
-    const iconHtml=`<div style="position:relative">
-      <div style="width:18px;height:18px;border-radius:50%;background:${p.color||'#94a3b8'};border:2.5px solid rgba(255,255,255,.9);box-shadow:0 0 10px ${p.color||'#94a3b8'}99;cursor:pointer"></div>
-      <div style="position:absolute;top:-9px;left:11px;font-size:11px;line-height:1">${statusIcon}</div>
-    </div>`;
+    const isAcil = p.tag === 'ACİL';
+    const iconHtml = isAcil
+      ? `<div style="position:relative;width:20px;height:20px">
+          <div class="acil-marker-dot"></div>
+          <div class="acil-marker-ring"></div>
+          <div style="position:absolute;top:-10px;left:13px;font-size:12px;line-height:1">🚨</div>
+        </div>`
+      : `<div style="position:relative">
+          <div style="width:18px;height:18px;border-radius:50%;background:${p.color||'#94a3b8'};border:2.5px solid rgba(255,255,255,.9);box-shadow:0 0 10px ${p.color||'#94a3b8'}99;cursor:pointer"></div>
+          <div style="position:absolute;top:-9px;left:11px;font-size:11px;line-height:1">${statusIcon}</div>
+        </div>`;
 
     if(markers[p.id]){
       // Refresh popup content in case status/data changed
@@ -1752,7 +1862,7 @@ function renderMarkers(){
       return;
     }
 
-    const icon=L.divIcon({className:'',html:iconHtml,iconSize:[18,18],iconAnchor:[9,9]});
+    const icon=L.divIcon({className:'',html:iconHtml,iconSize:isAcil?[20,20]:[18,18],iconAnchor:isAcil?[10,10]:[9,9]});
     const marker=L.marker([p.lat,p.lng],{icon,draggable:false});
     marker.bindPopup(makePopup(p),{maxWidth:260,className:'kula-popup'});
     marker.addTo(map);
@@ -1761,13 +1871,15 @@ function renderMarkers(){
 }
 
 function makePopup(p){
-  const canEdit=true; // Tüm kullanıcılar durum değiştirebilir
+  const canEdit=true;
   const isOwnerOrAdmin=currentUser&&(currentUser.role==='admin'||p.addedBy===currentUser.username);
   const icon=AKSAKLIK_ICON[p.tag]||'📌';
   const color=p.color||'#94a3b8';
   const st=p.status||'bekliyor';
   const pid=p.id;
+  const isAcil=p.tag==='ACİL';
   return `
+    ${isAcil?`<div style="background:#ef4444;color:#fff;font-weight:900;font-size:13px;letter-spacing:2px;text-align:center;padding:7px 10px;border-radius:8px;margin-bottom:8px">🚨 ACİL — HEMEN MÜDAHALE</div>`:''}
     <div class="popup-name">${icon} ${p.name}</div>
     <div style="display:flex;gap:5px;margin-bottom:6px;flex-wrap:wrap">
       <span style="background:${color}22;color:${color};border:1px solid ${color}55;border-radius:100px;padding:2px 8px;font-size:10px;font-weight:700">${p.tag||'—'}</span>
@@ -2433,7 +2545,7 @@ function renderIsler(){
   const container=document.getElementById('islerBody');
   if(!container)return;
 
-  const filtered=points.filter(p=>{
+  let filtered=points.filter(p=>{
     const st=p.status||'bekliyor';
     if(st!==activeIslerTab)return false;
     if(!q)return true;
@@ -2441,6 +2553,13 @@ function renderIsler(){
       ||(p.displayName||'').toLowerCase().includes(q)
       ||(p.tag||'').toLowerCase().includes(q)
       ||(p.desc||'').toLowerCase().includes(q);
+  });
+
+  // ACİL işleri en başa al
+  filtered.sort((a,b)=>{
+    if(a.tag==='ACİL'&&b.tag!=='ACİL') return -1;
+    if(b.tag==='ACİL'&&a.tag!=='ACİL') return 1;
+    return 0;
   });
 
   if(filtered.length===0){
@@ -2453,41 +2572,53 @@ function renderIsler(){
   const canAdmin=currentUser?.role==='admin';
   const tabColor=activeIslerTab==='bekliyor'?'#f59e0b':activeIslerTab==='devam'?'#3b82f6':'#06d6a0';
 
-  container.innerHTML=filtered.map(p=>{
+  const cards=filtered.map(p=>{
     const icon=AKSAKLIK_ICON[p.tag]||'📌';
     const color=p.color||'#94a3b8';
     const st=p.status||'bekliyor';
     const isOwnerOrAdmin=canAdmin||p.addedBy===currentUser?.username;
-    return `<div style="background:var(--bg);border:1px solid var(--border);border-left:4px solid ${tabColor};border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;cursor:pointer" onclick="flyToPoint('${p.id}')">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-        <span style="background:${color}22;color:${color};border:1px solid ${color}55;border-radius:100px;padding:2px 9px;font-size:11px;font-weight:700">${icon} ${p.tag||'—'}</span>
+    const isAcil=p.tag==='ACİL';
+    const cardBorder=isAcil?'border-left:4px solid #ef4444;border-color:#ef4444;':'border-left:4px solid '+tabColor+';';
+    const acilHeader=isAcil?`<div style="background:#ef4444;color:#fff;font-weight:900;font-size:10px;letter-spacing:1.5px;text-align:center;padding:4px 6px;border-radius:5px;margin-bottom:7px">🚨 ACİL</div>`:'';
+    return `<div style="background:var(--bg);border:1px solid var(--border);${cardBorder}border-radius:var(--radius);padding:10px;cursor:pointer;display:flex;flex-direction:column;gap:6px" onclick="flyToPoint('${p.id}')">
+      ${acilHeader}
+      <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">
+        <span style="background:${color}22;color:${color};border:1px solid ${color}55;border-radius:100px;padding:2px 7px;font-size:10px;font-weight:700;white-space:nowrap">${icon} ${p.tag||'—'}</span>
         <span style="flex:1"></span>
-        <span style="font-size:10px;color:var(--muted)">${p.dateStr||'—'}</span>
+        <span style="font-size:9px;color:var(--muted);white-space:nowrap">${p.dateStr||'—'}</span>
       </div>
-      <div style="font-weight:700;font-size:14px;margin-bottom:4px">${p.name}</div>
-      ${p.desc?`<div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-style:italic">📝 ${p.desc}</div>`:''}
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted)">
-          <span style="width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff">${(p.displayName||'?').charAt(0)}</span>
-          ${p.displayName||p.addedBy}
-        </span>
-        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)">🕐 ${p.timeStr||'—'}</span>
-      </div>
-      ${p.photo?`<img src="${p.photo}" style="width:100%;max-height:130px;object-fit:cover;border-radius:8px;border:1px solid var(--border);margin-bottom:8px"/>`:''}
-      <div style="display:flex;gap:6px;flex-wrap:wrap" onclick="event.stopPropagation()">
-        <select onchange="quickStatus('${p.id}',this.value);setTimeout(renderIsler,300)" style="padding:5px 8px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;cursor:pointer;font-family:'Outfit',sans-serif">
+      ${p.photo?`<img src="${p.photo}" style="width:100%;height:200px;object-fit:cover;border-radius:6px;border:1px solid var(--border)"/>`:''}
+      <div style="font-weight:700;font-size:12px;line-height:1.4">${p.name}</div>
+      ${p.desc?`<div style="font-size:11px;color:var(--muted);font-style:italic;line-height:1.3">📝 ${p.desc}</div>`:''}
+      ${activeIslerTab==='tamamlandi'?`<div style="display:flex;flex-direction:column;gap:4px">
+        <div style="display:flex;align-items:center;gap:5px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:6px;padding:4px 7px">
+          <span style="width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:inline-flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;flex-shrink:0">${(p.displayName||'?').charAt(0)}</span>
+          <span style="font-size:10px;color:#3b82f6;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">📝 ${p.displayName||p.addedBy}</span>
+          <span style="font-size:9px;color:var(--muted);margin-left:auto;white-space:nowrap">${p.dateStr||'—'}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px;background:rgba(6,214,160,.08);border:1px solid rgba(6,214,160,.25);border-radius:6px;padding:4px 7px">
+          <span style="font-size:11px">✅</span>
+          <span style="font-size:10px;color:#06d6a0;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.completedBy||p.displayName||p.addedBy}</span>
+          <span style="font-size:9px;color:var(--muted);margin-left:auto;white-space:nowrap">${p.completedAt||p.dateStr||'—'}</span>
+        </div>
+      </div>`:`<div style="display:flex;align-items:center;gap:5px">
+        <span style="width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:inline-flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;flex-shrink:0">${(p.displayName||'?').charAt(0)}</span>
+        <span style="font-size:10px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.displayName||p.addedBy}</span>
+      </div>`}
+      <div style="display:flex;gap:4px;flex-wrap:wrap" onclick="event.stopPropagation()">
+        <select onchange="quickStatus('${p.id}',this.value);setTimeout(renderIsler,300)" style="flex:1;min-width:0;padding:4px 5px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:10px;cursor:pointer;font-family:'Outfit',sans-serif">
           <option value="bekliyor" ${st==='bekliyor'?'selected':''}>⏳ Bekliyor</option>
           <option value="devam" ${st==='devam'?'selected':''}>🔧 Devam</option>
           <option value="tamamlandi" ${st==='tamamlandi'?'selected':''}>✅ Tamam</option>
         </select>
-        <button class="btn-xs btn-outline" onclick="openStatusPhoto('${p.id}')">📸</button>
-        ${isOwnerOrAdmin?`
-        <button class="btn-xs btn-outline" onclick="openEdit('${p.id}')">✏️</button>
-        <button class="btn-xs btn-danger-outline" onclick="deletePoint('${p.id}')">🗑</button>`:''}
-        <button class="btn-xs btn-outline" onclick="copyCoords(${p.lat},${p.lng})">📋</button>
+        <button class="btn-xs btn-outline" onclick="openStatusPhoto('${p.id}')" style="padding:4px 7px;font-size:11px">📸</button>
+        ${isOwnerOrAdmin?`<button class="btn-xs btn-outline" onclick="openEdit('${p.id}')" style="padding:4px 7px;font-size:11px">✏️</button>
+        <button class="btn-xs btn-danger-outline" onclick="deletePoint('${p.id}')" style="padding:4px 7px;font-size:11px">🗑</button>`:''}
       </div>
     </div>`;
   }).join('');
+
+  container.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${cards}</div>`;
 }
 
 // ══════════════════════════════════════════
