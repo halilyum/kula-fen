@@ -413,8 +413,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
     <div class="login-error" id="loginError"></div>
     <div class="login-info">Giriş bilgileri için yöneticinize başvurunuz.</div>
     <div style="margin-top:20px;text-align:center;padding:12px;background:linear-gradient(135deg,rgba(59,130,246,0.1),rgba(6,214,160,0.1));border:1px solid rgba(6,214,160,0.25);border-radius:10px">
-      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;letter-spacing:3px;background:linear-gradient(135deg,#3b82f6,#06d6a0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">— HALO was here 🏗️ —</div>
-      <div style="font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:1px">Kula Fen İşleri © 2025</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;letter-spacing:3px;background:linear-gradient(135deg,#3b82f6,#06d6a0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">— HALIL was here 🏗️ —</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:1px">Kula Fen İşleri © 2026</div>
     </div>
   </div>
 </div>
@@ -442,7 +442,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
     <div class="stat-cell"><div class="stat-val" id="statTamamlandi" style="color:#06d6a0">0</div><div class="stat-lbl">Tamam</div></div>
   </div>
   <div style="background:linear-gradient(90deg,rgba(59,130,246,0.12),rgba(6,214,160,0.12),rgba(59,130,246,0.12));border-bottom:1px solid rgba(6,214,160,0.2);text-align:center;padding:5px 0;flex-shrink:0">
-    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:3px;background:linear-gradient(135deg,#3b82f6,#06d6a0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">— HALO was here 🏗️ —</span>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:3px;background:linear-gradient(135deg,#3b82f6,#06d6a0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">— HALIL was here 🏗️ —</span>
   </div>
 
   <div id="map">
@@ -1132,6 +1132,20 @@ function doLogout(){
   document.getElementById('loginScreen').classList.add('active');
   closeDrawers();
 }
+const BUILD_TIME = "2026-03-29T00:30:00";
+
+function checkUpdateNotification(){
+  const lastSeen = localStorage.getItem('kula_last_build');
+  if(lastSeen !== BUILD_TIME){
+    localStorage.setItem('kula_last_build', BUILD_TIME);
+    if(lastSeen){
+      setTimeout(()=>{
+        toast('🔔 Halil Özkara tarafından yeni güncelleme yapıldı');
+      }, 1500);
+    }
+  }
+}
+
 function enterApp(){
   document.getElementById('loginScreen').classList.remove('active');
   document.getElementById('appScreen').classList.add('active');
@@ -1144,6 +1158,7 @@ function enterApp(){
   else renderAll();
   loadNotifications();
   populateReportUsers();
+  checkUpdateNotification();
   toast(`👋 Hoşgeldiniz, ${currentUser.display}!`);
 }
 
